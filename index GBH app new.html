@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111111" />
+    <meta name="description" content="Grech Bulk Haulage driver operations app" />
+    <title>Grech Bulk Haulage</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="assets/logo.jpg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="brand-wrap">
+          <img src="assets/logo.jpg" alt="Grech Bulk Haulage" class="brand-logo" />
+          <div>
+            <h1>Operations App</h1>
+            <p>Roster, dockets, time tracking, chat and photos</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="installBtn" class="ghost-btn hidden">Install App</button>
+          <button id="logoutBtn" class="ghost-btn hidden">Log out</button>
+        </div>
+      </header>
+
+      <main class="main-shell">
+        <section id="loginView" class="view active auth-shell">
+          <div class="card auth-card">
+            <h2>Sign in</h2>
+            <p class="muted">Use a driver login or the admin account to access the system.</p>
+            <form id="loginForm" class="grid-form">
+              <label>
+                Role
+                <select id="roleSelect">
+                  <option value="driver">Driver</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+              <label>
+                Name / Username
+                <select id="userSelect"></select>
+              </label>
+              <label>
+                Password / PIN
+                <input id="passwordInput" type="password" value="1234" required />
+              </label>
+              <button type="submit" class="primary-btn">Enter App</button>
+            </form>
+            <div class="note-box">
+              <strong>Demo access:</strong>
+              <span>All demo accounts use PIN <b>1234</b>. Admin username is <b>admin</b>.</span>
+            </div>
+          </div>
+          <div class="card preview-card">
+            <img src="assets/mockup.png" alt="App preview" />
+          </div>
+        </section>
+
+        <section id="appView" class="view">
+          <aside class="sidebar">
+            <div class="user-badge">
+              <div class="avatar" id="userInitials">GB</div>
+              <div>
+                <strong id="activeUserName">Guest</strong>
+                <p id="activeUserRole">Driver</p>
+              </div>
+            </div>
+            <nav class="sidebar-nav">
+              <button class="nav-btn active" data-target="dashboardSection">Dashboard</button>
+              <button class="nav-btn" data-target="rosterSection">Roster</button>
+              <button class="nav-btn" data-target="docketSection">Daily Docket</button>
+              <button class="nav-btn" data-target="timesheetSection">Clock On / Off</button>
+              <button class="nav-btn" data-target="chatSection">Group Chat</button>
+              <button class="nav-btn" data-target="photosSection">Photos</button>
+              <button class="nav-btn admin-only" data-target="settingsSection">Admin Settings</button>
+            </nav>
+          </aside>
+
+          <section class="content-area">
+            <section id="dashboardSection" class="content-section active">
+              <div class="section-head">
+                <h2>Dashboard</h2>
+                <p>Quick overview of operations for the week.</p>
+              </div>
+              <div class="stats-grid">
+                <article class="stat-card">
+                  <span>Today</span>
+                  <strong id="todayDate"></strong>
+                </article>
+                <article class="stat-card">
+                  <span>Open dockets</span>
+                  <strong id="openDocketsCount">0</strong>
+                </article>
+                <article class="stat-card">
+                  <span>Uploaded photos</span>
+                  <strong id="photoCount">0</strong>
+                </article>
+                <article class="stat-card">
+                  <span>Messages</span>
+                  <strong id="chatCount">0</strong>
+                </article>
+              </div>
+              <div class="dashboard-grid">
+                <div class="card">
+                  <h3>Upcoming shifts</h3>
+                  <div id="dashboardRoster"></div>
+                </div>
+                <div class="card">
+                  <h3>Recent activity</h3>
+                  <ul id="activityFeed" class="activity-feed"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section id="rosterSection" class="content-section">
+              <div class="section-head">
+                <h2>Weekly Roster</h2>
+                <p>Sunday to Saturday shift planning.</p>
+              </div>
+              <div class="card roster-card">
+                <div class="toolbar">
+                  <label>
+                    Week starting Sunday
+                    <input type="date" id="weekStartInput" />
+                  </label>
+                  <button id="resetRosterBtn" class="ghost-btn">Reset Sample Roster</button>
+                </div>
+                <div class="table-wrap">
+                  <table id="rosterTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section id="docketSection" class="content-section">
+              <div class="section-head">
+                <h2>Daily Docket</h2>
+                <p>Based on your existing GBH docket layout.</p>
+              </div>
+              <div class="card">
+                <form id="docketForm" class="grid-form docket-form">
+                  <label>Docket No.
+                    <input id="docketNumber" type="text" readonly />
+                  </label>
+                  <label>Date
+                    <input id="docketDate" type="date" />
+                  </label>
+                  <label>Driver
+                    <select id="docketDriver"></select>
+                  </label>
+                  <label>Truck
+                    <select id="docketTruck"></select>
+                  </label>
+                  <label>Customer
+                    <select id="docketCustomer"></select>
+                  </label>
+                  <label>Job Description
+                    <input id="jobDescription" type="text" placeholder="Asphalt haulage, dolomite, material transfer..." />
+                  </label>
+                  <label>Start Time
+                    <input id="startTime" type="time" />
+                  </label>
+                  <label>Finish Time
+                    <input id="finishTime" type="time" />
+                  </label>
+                  <label>Travel Hours
+                    <input id="travelHours" type="number" min="0" step="0.25" value="0" />
+                  </label>
+                  <label>Total Hours
+                    <input id="totalHours" type="number" min="0" step="0.25" value="0" />
+                  </label>
+                  <label class="full-span">Pre-start checks completed
+                    <select id="preStartStatus">
+                      <option value="Yes">Yes</option>
+                      <option value="Fault noted">Fault noted</option>
+                      <option value="No">No</option>
+                    </select>
+                  </label>
+                  <label class="full-span">Fault comments
+                    <textarea id="faultComments" rows="3" placeholder="Faults found, safety notes, truck issues, site issues..."></textarea>
+                  </label>
+                  <label class="full-span">Driver signature name
+                    <input id="driverSignature" type="text" placeholder="Type full name" />
+                  </label>
+                  <button type="submit" class="primary-btn full-span">Save Docket</button>
+                </form>
+              </div>
+              <div class="card">
+                <div class="section-head inline-head">
+                  <h3>Saved dockets</h3>
+                </div>
+                <div id="docketList" class="list-stack"></div>
+              </div>
+            </section>
+
+            <section id="timesheetSection" class="content-section">
+              <div class="section-head">
+                <h2>Clock On / Off</h2>
+                <p>Track hours worked and duty descriptions.</p>
+              </div>
+              <div class="card clock-card">
+                <div class="clock-display" id="liveClock">--:--:--</div>
+                <div class="timesheet-controls">
+                  <button id="clockInBtn" class="primary-btn">Clock In</button>
+                  <button id="clockOutBtn" class="danger-btn">Clock Out</button>
+                </div>
+                <form id="timesheetForm" class="grid-form">
+                  <label>Duty description
+                    <textarea id="dutyDescription" rows="3" placeholder="Describe today’s duties"></textarea>
+                  </label>
+                  <label>Job / Customer
+                    <select id="timesheetCustomer"></select>
+                  </label>
+                  <label>Truck
+                    <select id="timesheetTruck"></select>
+                  </label>
+                </form>
+                <div id="clockStatus" class="note-box">Not currently clocked in.</div>
+              </div>
+              <div class="card">
+                <h3>Time log</h3>
+                <div id="timesheetLog" class="list-stack"></div>
+              </div>
+            </section>
+
+            <section id="chatSection" class="content-section">
+              <div class="section-head">
+                <h2>Group Chat</h2>
+                <p>Simple team chat for drivers and admin.</p>
+              </div>
+              <div class="card chat-card">
+                <div id="chatMessages" class="chat-messages"></div>
+                <form id="chatForm" class="chat-form">
+                  <input id="chatInput" type="text" placeholder="Type a message for the GBH team" />
+                  <button type="submit" class="primary-btn">Send</button>
+                </form>
+              </div>
+            </section>
+
+            <section id="photosSection" class="content-section">
+              <div class="section-head">
+                <h2>Photo Uploads</h2>
+                <p>Upload truck, site, job and docket photos.</p>
+              </div>
+              <div class="card">
+                <form id="photoForm" class="photo-form">
+                  <input id="photoFileInput" type="file" accept="image/*" multiple />
+                  <button type="submit" class="primary-btn">Upload Photos</button>
+                </form>
+                <div id="photoGallery" class="gallery-grid"></div>
+              </div>
+            </section>
+
+            <section id="settingsSection" class="content-section admin-only-section">
+              <div class="section-head">
+                <h2>Admin Settings</h2>
+                <p>Manage dropdown options used across the app.</p>
+              </div>
+              <div class="settings-grid">
+                <div class="card">
+                  <h3>Drivers</h3>
+                  <form class="inline-form" data-list="drivers">
+                    <input type="text" placeholder="Add driver" />
+                    <button class="primary-btn" type="submit">Add</button>
+                  </form>
+                  <div id="driversList" class="tag-list"></div>
+                </div>
+                <div class="card">
+                  <h3>Trucks</h3>
+                  <form class="inline-form" data-list="trucks">
+                    <input type="text" placeholder="Add truck" />
+                    <button class="primary-btn" type="submit">Add</button>
+                  </form>
+                  <div id="trucksList" class="tag-list"></div>
+                </div>
+                <div class="card">
+                  <h3>Customers</h3>
+                  <form class="inline-form" data-list="customers">
+                    <input type="text" placeholder="Add customer" />
+                    <button class="primary-btn" type="submit">Add</button>
+                  </form>
+                  <div id="customersList" class="tag-list"></div>
+                </div>
+              </div>
+            </section>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
